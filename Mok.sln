@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mok", "Mok\Mok.csproj", "{FD74ACBC-15D8-4D97-8948-8DF35035F5B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{903F52F1-F75F-4359-A595-3CDFEF2DDAC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D697D8E6-26BC-42E3-9B60-3164E26E956E}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD74ACBC-15D8-4D97-8948-8DF35035F5B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD74ACBC-15D8-4D97-8948-8DF35035F5B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD74ACBC-15D8-4D97-8948-8DF35035F5B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD74ACBC-15D8-4D97-8948-8DF35035F5B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{903F52F1-F75F-4359-A595-3CDFEF2DDAC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{903F52F1-F75F-4359-A595-3CDFEF2DDAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{903F52F1-F75F-4359-A595-3CDFEF2DDAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{903F52F1-F75F-4359-A595-3CDFEF2DDAC5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2FD510D4-6402-48B8-BD7D-226997960CF5}
+	EndGlobalSection
+EndGlobal
