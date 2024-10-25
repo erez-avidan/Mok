@@ -54,5 +54,16 @@ namespace Tests
 
             Assert.Equal(100, mocked.GetSum(20, 2));
         }
+
+
+        [Fact]
+        public async Task Test_Setup_Async()
+        {
+            var mock = new Mok<IInterface>();
+            mock.Setup(x => x.GetSumAsync(It.IsAny<string>())).ReturnsAsync(100);
+            var mocked = mock.Object;
+
+            Assert.Equal(100, await mocked.GetSumAsync("A"));
+        }
     }
 }

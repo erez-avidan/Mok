@@ -95,5 +95,25 @@ namespace Tests
             
             mock.Verify(x => x.GetSum(It.Is<int>(x => x < 100), It.IsAny<int>()), Times.Exactly(1000));
         }
+
+        [Fact]
+        public async Task Test_Verify_AsyncTaskT()
+        {
+            var mock = new Mok<IInterface>();
+            var mocked = mock.Object;
+            await mocked.GetSumAsync("a");
+
+            mock.Verify(x => x.GetSumAsync("a"), Times.Once);
+        }
+
+        [Fact]
+        public async Task Test_Verify_AsyncTask()
+        {
+            var mock = new Mok<IInterface>();
+            var mocked = mock.Object;
+            await mocked.DoAsync("a");
+
+            mock.Verify(x => x.DoAsync("a"), Times.Once);
+        }
     }
 }

@@ -40,7 +40,6 @@ one nice benefit from this is you can see and debug all generated classes, inclu
 
 
 ## Todo
-- support `async` methods
 - support properties
 - support generic methods
 - support mocking classes instead of interfaces

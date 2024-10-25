@@ -116,6 +116,19 @@ internal class MockHandler
         }}
     }}
 
+    internal Task CallVoidAsync(string methodName, object[] parameters)
+    {{
+        AuditCall(methodName, parameters);
+
+        var setup = FindMatchingSetup(methodName, parameters);
+        if (setup != null)
+        {{
+            ((VoidSetup)setup).action?.Invoke();
+        }}
+
+        return Task.CompletedTask;
+    }}
+
      internal T? CallReturnValue<T>(string methodName, object[] parameters)
     {{
         AuditCall(methodName, parameters);
@@ -131,6 +144,23 @@ internal class MockHandler
         }}
 
         return default;
+    }}
+
+    internal Task<T> CallReturnValueAsync<T>(string methodName, object[] parameters)
+    {{
+        AuditCall(methodName, parameters);
+
+        var setup = FindMatchingSetup(methodName, parameters);
+        if (setup != null)
+        {{
+            var returnFunc = ((Setup<Task<T>>)setup).returnValue;
+            if (returnFunc != null)
+            {{
+                return returnFunc();
+            }}
+        }}
+
+        return Task.FromResult<T>(default);
     }}
 
     private void AuditCall(string methodName, object[] parameters)
@@ -280,7 +310,15 @@ public class Setup<T> : ISetup
     {{
         returnValue = () => {{ throw exception; }};
     }}
-}}";
+}}
+
+public static class SetupExtensions {{
+    public static void ReturnsAsync<TResult>(this Setup<Task<TResult>> mock, TResult value)
+    {{
+        mock.Returns(() => Task.FromResult(value));
+    }}
+}}
+";
             context.AddSource("SetupT.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 
