@@ -13,7 +13,7 @@
 	  <PackageReadmeFile>readme.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <PackageTags>Mok, Mocks, unittest, TDD</PackageTags>
-	  <Version>0.0.1</Version>
+	  <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

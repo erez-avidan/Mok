@@ -1,6 +1,8 @@
 ﻿Mok
 ===
 
+[![Version](https://img.shields.io/nuget/vpre/Mok.svg)](https://www.nuget.org/packages/Mok)
+
 <!-- #content -->
 Fast and familiar .NET mocking library
 
