@@ -44,5 +44,15 @@ namespace Tests
 
             Assert.Equal(100, mocked.GetSum(1, 2));
         }
+
+        [Fact]
+        public void Test_Setup_ItIs()
+        {
+            var mock = new Mok<IInterface>();
+            mock.Setup(x => x.GetSum(It.Is<int>(x => x > 10 && x < 100), 2)).Returns(100);
+            var mocked = mock.Object;
+
+            Assert.Equal(100, mocked.GetSum(20, 2));
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
 
 namespace Generators
 {
@@ -11,6 +12,7 @@ namespace Generators
             GenerateIMatcher(context);
             GenerateAnyMatcher(context);
             GenerateConstantMatcher(context);
+            GenerateCustomMatcher(context);
             GenerateMatcherFactory(context);
             GenerateISetup(context);
             GenerateVoidSetup(context);
@@ -18,6 +20,28 @@ namespace Generators
             GenerateMockHandler(context);
             GenerateTimes(context);
             GenerateException(context);
+        }
+
+        private static void GenerateCustomMatcher(GeneratorExecutionContext context)
+        {
+            var str = $@"
+namespace MokMock;
+
+internal class CustomMatcher : IMatcher
+{{
+    private readonly Delegate lambda;
+    public CustomMatcher(Delegate lambda)
+    {{
+        this.lambda = lambda;
+    }}
+    public bool IsMatching(object arg)
+    {{
+        return (bool)lambda.DynamicInvoke(arg);
+    }}
+}}
+            ";
+
+            context.AddSource("CustomMatcher.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 
         private static void GenerateException(GeneratorExecutionContext context)
@@ -318,9 +342,18 @@ internal static class MatcherFactory
 
         if (expression is MethodCallExpression methodExp)
         {{
-            if (methodExp.Method.DeclaringType?.Name == ""It"" && methodExp.Method.Name == ""IsAny"")
+            if (methodExp.Method.DeclaringType?.Name == ""It"")
             {{
-                return AnyMatcher;
+                if (methodExp.Method.Name == ""IsAny"")
+                {{
+                    return AnyMatcher;
+                }}
+                if (methodExp.Method.Name == ""Is"")
+                {{
+                    var lambda = ((LambdaExpression)methodExp.Arguments[0]).Compile();
+
+                    return new CustomMatcher(lambda);
+                }}
             }}
         }}
 
@@ -387,6 +420,11 @@ namespace MokMock;
 public static class It
 {{
     public static TValue IsAny<TValue>()
+    {{
+        return default;
+    }}
+
+    internal static T Is<T>(Func<T, bool> value)
     {{
         return default;
     }}

@@ -21,7 +21,7 @@ Fast and familiar .NET mocking library
 
 ## What?
 
-Mok (pronounced "Mak") is a made to be fast, using Source Generators makes it blazing fast while most other mocking libraries still use reflection ([Castle.DynamicProxy](https://github.com/castleproject/Core/blob/master/docs/dynamicproxy.md))
+Mok is a made to be fast, using Source Generators makes it blazing fast while most other mocking libraries still use reflection ([Castle.DynamicProxy](https://github.com/castleproject/Core/blob/master/docs/dynamicproxy.md))
 
 Another important aspect for this library is to be familiar, taking the well known syntax from [Moq](https://github.com/devlooped/moq/) and not reinventing the API, making it easier to migrate an existing project
 
@@ -40,7 +40,6 @@ one nice benefit from this is you can see and debug all generated classes, inclu
 ## Todo
 - support `async` methods
 - thread safe call counting
-- support for `It.Is()`
 - support properties
 - support generic methods
 - support mocking classes instead of interfaces

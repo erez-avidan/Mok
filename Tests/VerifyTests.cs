@@ -55,5 +55,29 @@ namespace Tests
 
             mock.Verify(x => x.GetSum(1, 2), Times.Never);
         }
+
+        [Fact]
+        public void Test_Verify_ItIsAny()
+        {
+            var mock = new Mok<IInterface>();
+
+            var mocked = mock.Object;
+
+            mocked.GetSum(1, 2);
+
+            mock.Verify(x => x.GetSum(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+        }
+
+        [Fact]
+        public void Test_Verify_ItIs()
+        {
+            var mock = new Mok<IInterface>();
+
+            var mocked = mock.Object;
+
+            mocked.GetSum(50, 2);
+
+            mock.Verify(x => x.GetSum(It.Is<int>(x => x < 100), It.IsAny<int>()), Times.Once);
+        }
     }
 }
