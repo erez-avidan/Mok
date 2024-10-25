@@ -93,12 +93,13 @@ public class Times
             var str = $@"
 using System.Linq.Expressions;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace MokMock;
 internal class MockHandler
 {{
     internal Dictionary<string, List<ISetup>> setups = [];
-    internal Dictionary<string, List<object[]>> calls = [];
+    public ConcurrentDictionary<string, ConcurrentBag<object[]>> calls = [];
 
     internal MockHandler()
     {{
@@ -134,11 +135,7 @@ internal class MockHandler
 
     private void AuditCall(string methodName, object[] parameters)
     {{
-        if (!calls.TryGetValue(methodName, out List<object[]>? value))
-        {{
-            value = [];
-            calls[methodName] = value;
-        }}
+        var value = calls.GetOrAdd(methodName, (_) => []);
 
         var cloned = parameters.Select(DeepClone).ToArray();
 
