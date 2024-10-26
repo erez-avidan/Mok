@@ -45,7 +45,7 @@ one nice benefit from this is you can see and debug all generated classes, inclu
 - support mocking classes instead of interfaces
 - other missing features from largely used mocking libraries
 - optimizations of generated code (only generate what's used)
-
+- write wiki to explain every feature
 
 ## Benchmark
 

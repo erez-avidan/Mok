@@ -49,8 +49,8 @@ using System.Linq.Expressions;
 namespace MokMock {{
 
     public interface IMock<T> {{
-        VoidSetup Setup(Expression<Action<T>> expression);
-        Setup<TResult> Setup<TResult>(Expression<Func<T, TResult>> expression);
+        ISetupAction Setup(Expression<Action<T>> expression);
+        ISetupFunc<TResult> Setup<TResult>(Expression<Func<T, TResult>> expression);
         T Object {{ get;}}
     }}
 
@@ -79,7 +79,7 @@ namespace MokMock {{
                 }} 
             }}
 
-        public VoidSetup Setup(Expression<Action<T>> expression)
+        public ISetupAction Setup(Expression<Action<T>> expression)
         {{
             if (expression.Body is not MethodCallExpression body)
             {{
@@ -92,7 +92,7 @@ namespace MokMock {{
             return setup;
         }}
 
-        public Setup<TResult> Setup<TResult>(Expression<Func<T, TResult>> expression)
+        public ISetupFunc<TResult> Setup<TResult>(Expression<Func<T, TResult>> expression)
         {{
             if (expression.Body is not MethodCallExpression body)
             {{

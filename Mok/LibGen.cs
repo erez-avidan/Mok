@@ -38,9 +38,7 @@ internal class CustomMatcher : IMatcher
     {{
         return (bool)lambda.DynamicInvoke(arg);
     }}
-}}
-            ";
-
+}}";
             context.AddSource("CustomMatcher.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 
@@ -233,7 +231,7 @@ internal class MockHandler
         }}
         catch
         {{
-            return $""[Uncloneable object: {{obj}}]"";
+            return $""[Unclonable object: {{obj}}]"";
         }}
     }}
 
@@ -286,7 +284,7 @@ internal class MockHandler
         {
             var str = $@"
 namespace MokMock;
-public class Setup<T> : ISetup
+public class Setup<T> : ISetup, ISetupFunc<T>
 {{
     public IEnumerable<IMatcher> matchers {{ get; }}
     public Func<T> returnValue {{ get; set; }}
@@ -313,7 +311,7 @@ public class Setup<T> : ISetup
 }}
 
 public static class SetupExtensions {{
-    public static void ReturnsAsync<TResult>(this Setup<Task<TResult>> mock, TResult value)
+    public static void ReturnsAsync<TResult>(this ISetupFunc<Task<TResult>> mock, TResult value)
     {{
         mock.Returns(() => Task.FromResult(value));
     }}
@@ -326,7 +324,7 @@ public static class SetupExtensions {{
         {
             var str = $@"
 namespace MokMock;
-public class VoidSetup : ISetup
+public class VoidSetup : ISetup, ISetupAction
 {{
     public IEnumerable<IMatcher> matchers {{ get; }}
     public Action action {{ get; set; }}
@@ -356,7 +354,21 @@ namespace MokMock;
 public interface ISetup
 {{
     IEnumerable<IMatcher> matchers {{ get; }}
-}}";
+}}
+
+public interface ISetupAction
+{{
+    void Callback(Action callback);
+    void Throws(Exception exception);
+}}
+
+public interface ISetupFunc<T>
+{{
+    void Returns(T value);
+    void Returns(Func<T> value);
+    void Throws(Exception exception);
+}}
+";
             context.AddSource("ISetup.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 
