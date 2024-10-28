@@ -132,6 +132,37 @@ namespace MokMock {{
             return body.Arguments.Select(arg => MatcherFactory.GetMatcher(arg)).ToArray();
         }}
 
+        public void VerifyGet<TResult>(Expression<Func<T, TResult>> expression, Times times)
+        {{
+            if (expression.Body is not MemberExpression body)
+            {{
+                throw new NotSupportedException(""expression not supported for Setup"");
+            }}
+
+            int count = VerifyInternal(times, $""get_{{body.Member.Name}}_Mock"", []);
+
+            if (times.ExpectedCalls != count)
+            {{
+                throw new IncorrectNumberOfCallsException($""Calls to property \""{{body.Member.Name}}\"" expected:{{times.ExpectedCalls}}, but found:{{count}}"");
+            }}
+        }}
+
+        public void VerifySet<TResult>(Expression<Func<T, TResult>> expression, Expression<Func<TResult>> value, Times times)
+        {{
+            if (expression.Body is not MemberExpression body)
+            {{
+                throw new NotSupportedException(""expression not supported for Setup"");
+            }}
+
+            IMatcher[] matchers = [MatcherFactory.GetMatcher(value.Body)];
+            int count = VerifyInternal(times, $""set_{{body.Member.Name}}_Mock"", matchers);
+
+            if (times.ExpectedCalls != count)
+            {{
+                throw new IncorrectNumberOfCallsException($""Calls to property \""{{body.Member.Name}}\"" expected:{{times.ExpectedCalls}}, but found:{{count}}"");
+            }}
+        }}
+
         public void Verify(Expression<Action<T>> expression, Times times)
         {{
             if (expression.Body is not MethodCallExpression body)
@@ -140,9 +171,19 @@ namespace MokMock {{
             }}
 
             var matchers = FetchParameters(body);
+            int count = VerifyInternal(times, body.Method.Name, matchers);
 
+            if (times.ExpectedCalls != count)
+            {{
+                throw new IncorrectNumberOfCallsException($""Calls to method \""{{body.Method.Name}}\"" expected:{{times.ExpectedCalls}}, but found:{{count}}"");
+            }}
+        }}
+
+        private int VerifyInternal(Times times, string name, IMatcher[] matchers)
+        {{
             int count = 0;
-            if (handler.calls.TryGetValue(body.Method.Name, out var calls))
+
+            if (handler.calls.TryGetValue(name, out var calls))
             {{
                 foreach (var callParams in calls)
                 {{
@@ -157,10 +198,7 @@ namespace MokMock {{
                 }}
             }}
 
-            if (times.ExpectedCalls != count)
-            {{
-                throw new IncorrectNumberOfCallsException($""Calls to method \""{{body.Method.Name}}\"" expected:{{times.ExpectedCalls}}, but found:{{count}}"");
-            }}
+            return count;
         }}
     }}
 }}";
