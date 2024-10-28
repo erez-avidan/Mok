@@ -7,5 +7,6 @@ namespace MokMock.Models
         public string Name { get; set; }
         public string Namespace { get; set; }
         public List<MethodModel> Methods { get; internal set; }
+        public List<PropertyModel> Properties { get; internal set; }
     }
 }

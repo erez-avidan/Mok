@@ -4,7 +4,7 @@ using System;
 
 namespace Generators
 {
-    internal class LibGen
+    internal class StaticCodeGenerator
     {
         internal static void Generate(GeneratorExecutionContext context)
         {
@@ -38,9 +38,7 @@ internal class CustomMatcher : IMatcher
     {{
         return (bool)lambda.DynamicInvoke(arg);
     }}
-}}
-            ";
-
+}}";
             context.AddSource("CustomMatcher.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 
@@ -93,12 +91,13 @@ public class Times
             var str = $@"
 using System.Linq.Expressions;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace MokMock;
 internal class MockHandler
 {{
     internal Dictionary<string, List<ISetup>> setups = [];
-    internal Dictionary<string, List<object[]>> calls = [];
+    public ConcurrentDictionary<string, ConcurrentBag<object[]>> calls = [];
 
     internal MockHandler()
     {{
@@ -113,6 +112,19 @@ internal class MockHandler
         {{
             ((VoidSetup)setup).action?.Invoke();
         }}
+    }}
+
+    internal Task CallVoidAsync(string methodName, object[] parameters)
+    {{
+        AuditCall(methodName, parameters);
+
+        var setup = FindMatchingSetup(methodName, parameters);
+        if (setup != null)
+        {{
+            ((VoidSetup)setup).action?.Invoke();
+        }}
+
+        return Task.CompletedTask;
     }}
 
      internal T? CallReturnValue<T>(string methodName, object[] parameters)
@@ -132,13 +144,26 @@ internal class MockHandler
         return default;
     }}
 
+    internal Task<T> CallReturnValueAsync<T>(string methodName, object[] parameters)
+    {{
+        AuditCall(methodName, parameters);
+
+        var setup = FindMatchingSetup(methodName, parameters);
+        if (setup != null)
+        {{
+            var returnFunc = ((Setup<Task<T>>)setup).returnValue;
+            if (returnFunc != null)
+            {{
+                return returnFunc();
+            }}
+        }}
+
+        return Task.FromResult<T>(default);
+    }}
+
     private void AuditCall(string methodName, object[] parameters)
     {{
-        if (!calls.TryGetValue(methodName, out List<object[]>? value))
-        {{
-            value = [];
-            calls[methodName] = value;
-        }}
+        var value = calls.GetOrAdd(methodName, (_) => []);
 
         var cloned = parameters.Select(DeepClone).ToArray();
 
@@ -206,7 +231,7 @@ internal class MockHandler
         }}
         catch
         {{
-            return $""[Uncloneable object: {{obj}}]"";
+            return $""[Unclonable object: {{obj}}]"";
         }}
     }}
 
@@ -241,12 +266,12 @@ internal class MockHandler
         return null;
     }}
 
-    internal void AddSetup(MethodCallExpression body, ISetup setup)
+    internal void AddSetup(string name, ISetup setup)
     {{
-        if (!setups.TryGetValue(body.Method.Name, out List<ISetup>? value))
+        if (!setups.TryGetValue(name, out List<ISetup>? value))
         {{
             value = [];
-            setups.Add(body.Method.Name, value);
+            setups.Add(name, value);
         }}
 
         value.Add(setup);
@@ -259,7 +284,7 @@ internal class MockHandler
         {
             var str = $@"
 namespace MokMock;
-public class Setup<T> : ISetup
+public class Setup<T> : ISetup, ISetupFunc<T>
 {{
     public IEnumerable<IMatcher> matchers {{ get; }}
     public Func<T> returnValue {{ get; set; }}
@@ -283,7 +308,15 @@ public class Setup<T> : ISetup
     {{
         returnValue = () => {{ throw exception; }};
     }}
-}}";
+}}
+
+public static class SetupExtensions {{
+    public static void ReturnsAsync<TResult>(this ISetupFunc<Task<TResult>> mock, TResult value)
+    {{
+        mock.Returns(() => Task.FromResult(value));
+    }}
+}}
+";
             context.AddSource("SetupT.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 
@@ -291,7 +324,7 @@ public class Setup<T> : ISetup
         {
             var str = $@"
 namespace MokMock;
-public class VoidSetup : ISetup
+public class VoidSetup : ISetup, ISetupAction
 {{
     public IEnumerable<IMatcher> matchers {{ get; }}
     public Action action {{ get; set; }}
@@ -321,7 +354,21 @@ namespace MokMock;
 public interface ISetup
 {{
     IEnumerable<IMatcher> matchers {{ get; }}
-}}";
+}}
+
+public interface ISetupAction
+{{
+    void Callback(Action callback);
+    void Throws(Exception exception);
+}}
+
+public interface ISetupFunc<T>
+{{
+    void Returns(T value);
+    void Returns(Func<T> value);
+    void Throws(Exception exception);
+}}
+";
             context.AddSource("ISetup.g.cs", CSharpSyntaxTree.ParseText(str).GetRoot().NormalizeWhitespace().ToFullString());
         }
 

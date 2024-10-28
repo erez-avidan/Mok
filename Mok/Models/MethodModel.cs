@@ -7,5 +7,6 @@ namespace MokMock.Models
         public string Name { get; set; }
         public string ReturnType { get; set; }
         public List<ParameterModel> Parameters { get; set; }
+        public bool IsPrivate { get; internal set; }
     }
 }

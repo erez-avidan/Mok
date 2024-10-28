@@ -6,9 +6,11 @@ namespace MokMock.CodeGenerators
 {
     internal class MethodGenerator
     {
+        const string TASK_PREFIX = "System.Threading.Tasks.Task<";
+
         public void Generate(MethodModel model, StringBuilder builder)
         {
-            builder.Append($@"public {model.ReturnType} {model.Name} (");
+            builder.Append($@"{(model.IsPrivate ? "private" : "public")} {model.ReturnType} {model.Name} (");
 
             if (model.Parameters?.Any() == true)
             {
@@ -39,6 +41,30 @@ namespace MokMock.CodeGenerators
 
                 builder.AppendLine("});");
             } 
+            else if (model.ReturnType == "System.Threading.Tasks.Task")
+            {
+                builder.AppendLine(@$"return handler.CallVoidAsync(""{model.Name}"", new object[] {{");
+                model.Parameters.ForEach((para) =>
+                {
+                    builder.Append(para.Name);
+                    builder.Append(", ");
+                });
+
+                builder.AppendLine("});");
+            }
+            else if (model.ReturnType.StartsWith(TASK_PREFIX))
+            {
+                var innerType = model.ReturnType.Substring(TASK_PREFIX.Length, (model.ReturnType.Length - TASK_PREFIX.Length) - 1);
+                
+                builder.AppendLine(@$"return handler.CallReturnValueAsync<{innerType}>(""{model.Name}"", new object[] {{");
+                model.Parameters.ForEach((para) =>
+                {
+                    builder.Append(para.Name);
+                    builder.Append(", ");
+                });
+
+                builder.AppendLine("});");
+            }
             else 
             {
                 builder.AppendLine(@$"return handler.CallReturnValue<{model.ReturnType}>(""{model.Name}"", new object[] {{");

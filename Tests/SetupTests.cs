@@ -54,5 +54,42 @@ namespace Tests
 
             Assert.Equal(100, mocked.GetSum(20, 2));
         }
+
+
+        [Fact]
+        public async Task Test_Setup_Async()
+        {
+            var mock = new Mok<IInterface>();
+            mock.Setup(x => x.GetSumAsync(It.IsAny<string>())).ReturnsAsync(100);
+            var mocked = mock.Object;
+
+            Assert.Equal(100, await mocked.GetSumAsync("A"));
+        }
+
+        [Fact]
+        public void Test_Setup_Get()
+        {
+            var mock = new Mok<IInterface>();
+            mock.SetupGet(x => x.Prop).Returns(100);
+            var mocked = mock.Object;
+
+            Assert.Equal(100, mocked.Prop);
+        }
+
+        [Fact]
+        public void Test_Setup_Set()
+        {
+            var mock = new Mok<IInterface>();
+            var isBelow = false;
+            mock.SetupSet(x => x.Prop, () => It.Is<int>(x => x > 5)).Callback(() => isBelow = false);
+            mock.SetupSet(x => x.Prop, () => It.Is<int>(x => x <= 5)).Callback(() => isBelow = true);
+            var mocked = mock.Object;
+
+            mocked.Prop = 100;
+            Assert.False(isBelow);
+
+            mocked.Prop = 1;
+            Assert.True(isBelow);
+        }
     }
 }
