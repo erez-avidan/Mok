@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MokMock.CodeGenerators
 {
-    internal class ClassGenerator(MethodGenerator methodGenerator)
+    internal class ClassGenerator(MethodGenerator methodGenerator, PropertyGenerator propertyGenerator)
     {
         public string Generate(ClassModel classModel)
         {
@@ -21,6 +21,11 @@ internal class {classModel.Name}_Mock : {classModel.Namespace}.{classModel.Name}
         public {classModel.Name}_Mock(MockHandler handler) {{
             this.handler = handler;        
 }}");
+
+            foreach (var property in classModel.Properties)
+            {
+                propertyGenerator.Generate(property, builder);
+            }
 
             foreach (var method in classModel.Methods)
             {

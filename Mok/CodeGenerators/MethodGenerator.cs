@@ -10,7 +10,7 @@ namespace MokMock.CodeGenerators
 
         public void Generate(MethodModel model, StringBuilder builder)
         {
-            builder.Append($@"public {model.ReturnType} {model.Name} (");
+            builder.Append($@"{(model.IsPrivate ? "private" : "public")} {model.ReturnType} {model.Name} (");
 
             if (model.Parameters?.Any() == true)
             {

@@ -4,7 +4,7 @@ using System;
 
 namespace Generators
 {
-    internal class LibGen
+    internal class StaticCodeGenerator
     {
         internal static void Generate(GeneratorExecutionContext context)
         {
@@ -266,12 +266,12 @@ internal class MockHandler
         return null;
     }}
 
-    internal void AddSetup(MethodCallExpression body, ISetup setup)
+    internal void AddSetup(string name, ISetup setup)
     {{
-        if (!setups.TryGetValue(body.Method.Name, out List<ISetup>? value))
+        if (!setups.TryGetValue(name, out List<ISetup>? value))
         {{
             value = [];
-            setups.Add(body.Method.Name, value);
+            setups.Add(name, value);
         }}
 
         value.Add(setup);

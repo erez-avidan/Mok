@@ -9,5 +9,8 @@
         Task DoAsync(string x);
 
         Task<int> GetSumAsync(string x);
+
+        int Prop { get; set; }
+
     }
 }
