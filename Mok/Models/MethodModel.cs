@@ -8,5 +8,7 @@ namespace MokMock.Models
         public string ReturnType { get; set; }
         public List<ParameterModel> Parameters { get; set; }
         public bool IsPrivate { get; internal set; }
+        public bool IsGeneric { get; internal set; }
+        public IEnumerable<string> GenericTypes { get; internal set; }
     }
 }

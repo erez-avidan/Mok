@@ -12,5 +12,7 @@
 
         int Prop { get; set; }
 
+        T Do<T>(T x);
+
     }
 }

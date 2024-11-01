@@ -115,5 +115,29 @@ namespace Tests
 
             mock.Verify(x => x.DoAsync("a"), Times.Once);
         }
+
+        [Fact]
+        public void Test_Verify_Get()
+        {
+            var mock = new Mok<IInterface>();
+
+            var mocked = mock.Object;
+
+            var x = mocked.Prop;
+
+            mock.VerifyGet(x => x.Prop, Times.Once);
+        }
+
+        [Fact]
+        public void Test_Verify_Set()
+        {
+            var mock = new Mok<IInterface>();
+
+            var mocked = mock.Object;
+
+            mocked.Prop = 5;
+
+            mock.VerifySet(x => x.Prop,() => It.IsAny<int>(), Times.Once);
+        }
     }
 }

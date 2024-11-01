@@ -17,7 +17,7 @@ namespace Mok.CodeGenerators
             var models = CreateModels(context, receiver);
             CreateCode(context, models);
 
-            return models.Select(m => new MockFile { Name = m.Name, Namespace = m.Namespace }).ToList();
+            return models.Select(m => new MockFile { ClassName = m.TypeToString, MockName = m.MockName}).ToList();
         }
 
         private static void CreateCode(GeneratorExecutionContext context, List<ClassModel> models)
@@ -25,7 +25,7 @@ namespace Mok.CodeGenerators
             var classGen = new ClassGenerator(new MethodGenerator(), new PropertyGenerator());
             foreach (var model in models)
             {
-                context.AddSource(model.Name + "_Mock.g.cs", classGen.Generate(model));
+                context.AddSource(model.MockName + ".g.cs", classGen.Generate(model));
             }
         }
 
@@ -43,10 +43,22 @@ namespace Mok.CodeGenerators
                     continue;
                 }
 
+                var mockNameSuffix = string.Empty;
+                var typeToStringSuffix = string.Empty;
+                var typeSuffix = string.Empty;
+
+                if (symbol.IsGenericType)
+                {
+                    mockNameSuffix = string.Join("_", symbol.TypeArguments.Select(ta => ta.Name));
+                    typeToStringSuffix = $"`{symbol.TypeArguments.Length}[{string.Join(",", symbol.TypeArguments.Select(ta => ta.ContainingNamespace.Name + '.' + ta.Name))}]";
+                    typeSuffix =$"<{string.Join(",", symbol.TypeArguments.Select(ta => ta.ContainingNamespace.Name + '.' + ta.Name))}>";
+                }
+
                 var classModel = new ClassModel
                 {
-                    Name = symbol.Name,
-                    Namespace = symbol.ContainingNamespace.ToDisplayString(),
+                    MockName = $"{symbol.Name}_{mockNameSuffix}_Mock",
+                    FullNamespace = $"{symbol.ContainingNamespace.ToDisplayString()}.{symbol.Name}{typeSuffix}",
+                    TypeToString = $"{symbol.ContainingNamespace.ToDisplayString()}.{symbol.Name}{typeToStringSuffix}",
                     Methods = symbol.GetMembers().OfType<IMethodSymbol>().Where(m =>
                             (m.IsAbstract || m.IsVirtual || m.IsOverride))
                         .Select(m =>
@@ -62,6 +74,8 @@ namespace Mok.CodeGenerators
                                 Name = name,
                                 ReturnType = m.ReturnType.ToDisplayString(),
                                 IsPrivate = isProperty,
+                                IsGeneric = m.IsGenericMethod,
+                                GenericTypes = m.TypeArguments.Select(t => t.Name),
                                 Parameters = m.Parameters.Select(p => new ParameterModel
                                 {
                                     Name = p.Name,
