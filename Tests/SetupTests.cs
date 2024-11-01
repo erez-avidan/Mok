@@ -91,5 +91,34 @@ namespace Tests
             mocked.Prop = 1;
             Assert.True(isBelow);
         }
+
+        [Fact]
+        public void Test_Setup_GenericMethod()
+        {
+            var mock = new Mok<IInterface>();
+            mock.Setup(m => m.Do(1)).Returns(123);
+            mock.Setup(m => m.Do<string>("a")).Returns("abc");
+
+            var mocked = mock.Object;
+
+            Assert.Equal(123, mocked.Do(1));
+            Assert.Equal("abc", mocked.Do<string>("a"));
+        }
+
+        [Fact]
+        public void Test_Setup_GenericClass()
+        {
+            var mock = new Mok<IGenericInterface<int>>();
+            mock.Setup(m => m.Do(1)).Returns(123);
+
+            var mock1 = new Mok<IGenericInterface<string>>();
+            mock1.Setup(m => m.Do("a")).Returns("abc");
+
+            var mocked = mock.Object;
+            var mocked1 = mock1.Object;
+
+            Assert.Equal(123, mocked.Do(1));
+            Assert.Equal("abc", mocked1.Do("a"));
+        }
     }
 }

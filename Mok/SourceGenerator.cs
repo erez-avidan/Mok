@@ -20,8 +20,8 @@ namespace Generators
                 return;
             }
 
-            List<MockFile> mocks = MocksCodeGenerator.GenerateMocks(context, receiver);
             StaticCodeGenerator.Generate(context);
+            List<MockFile> mocks = MocksCodeGenerator.GenerateMocks(context, receiver);
             CreateMocksFactory(mocks, context);
         }
 
@@ -32,7 +32,7 @@ namespace Generators
             var sb = new StringBuilder();
             foreach (var model in models)
             {
-                sb.AppendLine($"{{ \"{model.Namespace}.{model.Name}\", (handler) => new MokMock.Generated.{model.Name}_Mock(handler) }},");
+                sb.AppendLine($"{{ \"{model.ClassName}\", (handler) => new MokMock.Generated.{model.MockName}(handler) }},");
             }
 
             var str = $@"

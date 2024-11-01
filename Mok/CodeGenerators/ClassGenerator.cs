@@ -15,10 +15,10 @@ namespace MokMock.CodeGenerators
             builder.Append(@$"
 using MokMock;
 namespace MokMock.Generated;
-internal class {classModel.Name}_Mock : {classModel.Namespace}.{classModel.Name} {{
+internal class {classModel.MockName} : {classModel.FullNamespace} {{
     private MockHandler handler;
 
-        public {classModel.Name}_Mock(MockHandler handler) {{
+        public {classModel.MockName}(MockHandler handler) {{
             this.handler = handler;        
 }}");
 

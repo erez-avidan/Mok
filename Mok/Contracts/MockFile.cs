@@ -6,7 +6,7 @@ namespace Mok.Contracts
 {
     internal class MockFile
     {
-        public string Name { get; set; }
-        public string Namespace { get; set; }
+        public string ClassName { get; set; }
+        public string MockName { get; internal set; }
     }
 }
