@@ -40,7 +40,6 @@ one nice benefit from this is you can see and debug all generated classes, inclu
 
 
 ## Todo
-- [ ] interface inheritance
 - [ ] support mocking classes instead of interfaces
 - [ ] mock events
 - [ ] other missing features from largely used mocking libraries

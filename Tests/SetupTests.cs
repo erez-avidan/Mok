@@ -120,5 +120,28 @@ namespace Tests
             Assert.Equal(123, mocked.Do(1));
             Assert.Equal("abc", mocked1.Do("a"));
         }
+
+        [Fact]
+        public void Test_Setup_InheritedInterface()
+        {
+            var mock = new Mok<IInheritedInterface>();
+
+            mock.Setup(m => m.Do(1)).Returns(123);
+
+            var mocked = mock.Object;
+
+            Assert.Equal(123, mocked.Do(1));
+        }
+
+        [Fact]
+        public void Test_Setup_Inherited2Level_Interface()
+        {
+            var mock = new Mok<IInherited2Interface>();
+            mock.Setup(m => m.Do(1)).Returns(123);
+
+            var mocked = mock.Object;
+
+            Assert.Equal(123, mocked.Do(1));
+        }
     }
 }
