@@ -1,15 +1,25 @@
 ﻿using MokMock.Models;
-using System;
-using System.Reflection;
+using System.Collections.Generic;
 using System.Text;
 
 namespace MokMock.CodeGenerators
 {
     internal class PropertyGenerator
     {
-        internal void Generate(PropertyModel model, StringBuilder builder)
+        internal void Generate(PropertyModel model, StringBuilder builder, HashSet<string> signaturesSet)
         {
-            builder.Append($@"public {model.Type} {model.Name} {{");
+            var signature = $"public {model.Type} {model.Name}";
+
+            if (signaturesSet.Contains(signature))
+            {
+                return;
+            }
+
+            signaturesSet.Add(signature);
+
+            builder.Append(signature);
+
+            builder.Append("{");
 
             if (model.Get)
             {

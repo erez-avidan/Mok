@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mok.Contracts
+﻿namespace Mok.Contracts
 {
     internal class MockFile
     {

@@ -2,10 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Mok.CodeGenerators;
 using Mok.Contracts;
-using MokMock.CodeGenerators;
-using MokMock.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Generators
